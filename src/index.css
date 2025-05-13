@@ -1,0 +1,161 @@
+:root {
+  font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Common variables for both themes */
+  --primary: #e53935;
+  --primary-light: #ff6f60;
+  --primary-dark: #ab000d;
+  --secondary: #424242;
+  --secondary-light: #6d6d6d;
+  --secondary-dark: #1b1b1b;
+
+  /* Transition for theme switching */
+  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark theme (default) */
+body[data-theme="dark"] {
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #121212;
+
+  /* Background colors */
+  --bg-main: #121212;
+  --bg-alt: #1e1e1e;
+  --bg-card: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Light theme */
+body[data-theme="light"] {
+  color-scheme: light;
+  color: #333333;
+  background-color: #f8f8f8;
+
+  /* Background colors */
+  --bg-main: #f8f8f8;
+  --bg-alt: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  --text-tertiary: #777777;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+a {
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary-light);
+  text-decoration: underline;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  transition: var(--theme-transition);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.2;
+  margin: 0;
+  padding: 0;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 3em;
+  color: var(--text-primary);
+  margin-bottom: 0.5em;
+}
+
+h2 {
+  font-size: 2.2em;
+  color: var(--primary);
+  margin-bottom: 0.5em;
+}
+
+p {
+  margin: 0 0 1rem 0;
+}
+
+button {
+  border-radius: 4px;
+  border: none;
+  padding: 0.7em 1.5em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+button:focus,
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.5), 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Accent text effect */
+.accent-text {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Card border effect */
+.card-border {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-card);
+  box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+/* Container for sections */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Section styling */
+section {
+  padding: 5rem 0;
+}
+
+/* Apply theme transitions to all elements */
+* {
+  transition: var(--theme-transition);
+}
