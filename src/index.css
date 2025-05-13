@@ -6,6 +6,7 @@
 
   /* Common variables for both themes */
   --primary: #e53935;
+  --primary-rgb: 229, 57, 53;
   --primary-light: #ff6f60;
   --primary-dark: #ab000d;
   --secondary: #424242;
