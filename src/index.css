@@ -2,6 +2,7 @@
   font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  font-size: 16px; /* Base font size */
 
   /* Common variables for both themes */
   --primary: #e53935;
@@ -13,6 +14,21 @@
 
   /* Transition for theme switching */
   --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+  /* Responsive font sizes */
+  --fs-xxl: clamp(2.5rem, 5vw, 3.5rem);  /* For h1 */
+  --fs-xl: clamp(2rem, 4vw, 2.8rem);     /* For h2 */
+  --fs-lg: clamp(1.5rem, 3vw, 2rem);     /* For h3 */
+  --fs-md: clamp(1.1rem, 2vw, 1.3rem);   /* For larger paragraph text */
+  --fs-base: clamp(0.9rem, 1.5vw, 1rem); /* For normal paragraph text */
+  --fs-sm: clamp(0.8rem, 1vw, 0.9rem);   /* For smaller text */
+
+  /* Spacing variables */
+  --space-xs: clamp(0.5rem, 1vw, 0.75rem);
+  --space-sm: clamp(0.75rem, 1.5vw, 1rem);
+  --space-md: clamp(1rem, 2vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 3vw, 2.5rem);
+  --space-xl: clamp(2rem, 4vw, 3.5rem);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -87,19 +103,33 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 3em;
+  font-size: var(--fs-xxl);
   color: var(--text-primary);
-  margin-bottom: 0.5em;
+  margin-bottom: var(--space-sm);
 }
 
 h2 {
-  font-size: 2.2em;
+  font-size: var(--fs-xl);
   color: var(--primary);
-  margin-bottom: 0.5em;
+  margin-bottom: var(--space-sm);
+}
+
+h3 {
+  font-size: var(--fs-lg);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+h4 {
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
 }
 
 p {
-  margin: 0 0 1rem 0;
+  font-size: var(--fs-base);
+  margin: 0 0 var(--space-md) 0;
+  line-height: 1.6;
 }
 
 button {
@@ -147,15 +177,26 @@ button:focus-visible {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 var(--space-md);
+  box-sizing: border-box;
 }
 
 /* Section styling */
 section {
-  padding: 5rem 0;
+  padding: var(--space-xl) 0;
+  width: 100%;
+  overflow: hidden; /* Prevent horizontal scrolling */
 }
 
-/* Apply theme transitions to all elements */
-* {
+/* Global box-sizing and transitions */
+*, *::before, *::after {
+  box-sizing: border-box;
   transition: var(--theme-transition);
+}
+
+/* Responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
