@@ -63,7 +63,10 @@ const Projects = () => {
 
         <div className="projects-grid">
           {filteredProjects.map(project => (
-            <div className="project-card card-border" key={project.id}>
+            <div
+              className={`project-card card-border ${project.id === 2 ? 'mindease-card' : ''}`}
+              key={project.id}
+            >
               <div className="project-image">
                 <img src={project.image} alt={project.title} />
                 <div className="project-overlay">

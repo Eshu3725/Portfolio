@@ -498,6 +498,87 @@ body[data-theme="dark"] .theme-toggle:hover {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* MindEase Project Card Special Styling */
+.mindease-card {
+  position: relative;
+  z-index: 1;
+  border: 2px solid transparent;
+  transition: all 0.4s ease;
+  animation: mindease-pulse 3s infinite alternate;
+}
+
+@keyframes mindease-pulse {
+  0% {
+    box-shadow: 0 4px 8px rgba(229, 57, 53, 0.1);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+  }
+}
+
+.mindease-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+  z-index: -1;
+  opacity: 0.1;
+  border-radius: 8px;
+  transition: opacity 0.4s ease;
+}
+
+.mindease-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(229, 57, 53, 0.3);
+}
+
+.mindease-card:hover::before {
+  opacity: 0.2;
+}
+
+.mindease-card .project-image {
+  height: 220px;
+  position: relative;
+}
+
+.mindease-card .project-image::after {
+  content: 'AI-Powered';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--primary);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.mindease-card .project-title {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.mindease-card .tech-badge {
+  background-color: rgba(229, 57, 53, 0.1);
+  color: var(--primary);
+  font-weight: 600;
+  border: 1px solid rgba(229, 57, 53, 0.2);
+  transition: all 0.3s ease;
+}
+
+.mindease-card .tech-badge:hover {
+  background-color: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
 .project-image {
   position: relative;
   overflow: hidden;
