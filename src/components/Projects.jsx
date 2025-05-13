@@ -12,7 +12,7 @@ const Projects = () => {
       category: 'web',
       technologies: ['React', 'Node.js', 'MongoDB'],
       link: '#',
-      github: '#'
+      github: 'https://github.com/Eshu3725/Portfolio.git'
     },
     {
       id: 2,
