@@ -58,13 +58,22 @@ const Contact = () => {
       from_email: formData.email,
       reply_to: formData.email, // Add reply_to parameter to ensure the sender's email is included
       subject: formData.subject,
-      message: `Message from ${formData.name} (${formData.email}):\n\n${formData.message}`,
+      message: `Subject: ${formData.subject}\n\nMessage from ${formData.name} (${formData.email}):\n\n${formData.message}`,
+      to_name: 'Eshaan',
       to_email: 'eshaanvenkatesh3725@gmail.com'
     };
 
     try {
-      // Send email using EmailJS
-      emailjs.send(serviceId, templateId, templateParams)
+      // Send email using EmailJS with explicit subject
+      emailjs.send(
+        serviceId,
+        templateId,
+        {
+          ...templateParams,
+          // Ensure subject is properly set for the email
+          subject_line: formData.subject
+        }
+      )
         .then((response) => {
           console.log('Email sent successfully:', response);
 
