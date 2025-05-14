@@ -7,18 +7,18 @@ const Skills = () => {
       { name: 'Flutter', level: 10 },
       { name: 'C/C++', level: 70 }
     ],
+    backend: [
+      { name: 'Node.js', level: 10 },
+      { name: 'Express', level: 10 },
+      { name: 'Firebase', level: 50 },
+      { name: 'MongoDB', level: 10 }
+    ],
     frontend: [
       { name: 'HTML5', level: 90 },
       { name: 'CSS3', level: 70 },
       { name: 'React', level: 30 },
       { name: 'UI/UX Design', level: 50 },
       { name: 'Tailwind CSS', level: 10 }
-    ],
-    backend: [
-      { name: 'Node.js', level: 10 },
-      { name: 'Express', level: 10 },
-      { name: 'Firebase', level: 50 },
-      { name: 'MongoDB', level: 10 }
     ],
     tools: [
       { name: 'Git', level: 80 },
