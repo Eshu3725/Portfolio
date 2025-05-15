@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 
 const Contact = () => {
@@ -147,19 +148,83 @@ const Contact = () => {
     }
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  const formControlVariants = {
+    initial: { scale: 1, boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)" },
+    focus: { scale: 1.02, boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)" }
+  };
+
+  const buttonVariants = {
+    initial: { scale: 1 },
+    hover: {
+      scale: 1.05,
+      boxShadow: "0 10px 25px rgba(var(--primary-rgb), 0.3)"
+    },
+    tap: { scale: 0.98 },
+    disabled: {
+      opacity: 0.7,
+      scale: 1,
+      boxShadow: "none"
+    }
+  };
+
+  const socialLinkVariants = {
+    initial: { scale: 1 },
+    hover: {
+      y: -5,
+      scale: 1.2,
+      backgroundColor: "var(--primary)",
+      color: "white",
+      transition: { duration: 0.3 }
+    },
+    tap: { scale: 0.9 }
+  };
+
   return (
     <section id="contact" className="contact">
       <div className="container contact-container">
-        <div className="section-header">
+        <motion.div
+          className="section-header"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6 }}
+        >
           <h2>Get In Touch</h2>
           <div className="section-divider">
             <span className="section-line" />
           </div>
-        </div>
+        </motion.div>
 
         <div className="contact-content">
-          <div className="contact-info">
-            <div className="contact-item">
+          <motion.div
+            className="contact-info"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <motion.div className="contact-item" variants={itemVariants}>
               <div className="contact-icon">
                 <i className="fas fa-map-marker-alt" />
               </div>
@@ -167,9 +232,9 @@ const Contact = () => {
                 <h3>Location</h3>
                 <p>Tumkur, Karnataka, India</p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="contact-item">
+            <motion.div className="contact-item" variants={itemVariants}>
               <div className="contact-icon">
                 <i className="fas fa-envelope" />
               </div>
@@ -177,38 +242,110 @@ const Contact = () => {
                 <h3>Email</h3>
                 <p>eshaanvenkatesh3725@gmail.com</p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="social-links">
-              <a href="https://github.com/Eshu3725" className="social-link" target="_blank" rel="noopener noreferrer">
+            <motion.div className="social-links" variants={itemVariants}>
+              <motion.a
+                href="https://github.com/Eshu3725"
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                variants={socialLinkVariants}
+              >
                 <i className="fab fa-github" />
-              </a>
-              <a href="https://www.linkedin.com/in/eshaan-a-v-62068028a/" className="social-link" target="_blank" rel="noopener noreferrer">
+              </motion.a>
+              <motion.a
+                href="https://www.linkedin.com/in/eshaan-a-v-62068028a/"
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                variants={socialLinkVariants}
+              >
                 <i className="fab fa-linkedin-in" />
-              </a>
-              <a href="https://x.com/Eshaan9320" className="social-link" target="_blank" rel="noopener noreferrer">
+              </motion.a>
+              <motion.a
+                href="https://x.com/Eshaan9320"
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                variants={socialLinkVariants}
+              >
                 <i className="fab fa-twitter" />
-              </a>
-              <a href="https://dribbble.com/Eshu3725" className="social-link" target="_blank" rel="noopener noreferrer">
+              </motion.a>
+              <motion.a
+                href="https://dribbble.com/Eshu3725"
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                variants={socialLinkVariants}
+              >
                 <i className="fab fa-dribbble" />
-              </a>
-            </div>
-          </div>
+              </motion.a>
+            </motion.div>
+          </motion.div>
 
-          <div className="contact-form-container card-border">
+          <motion.div
+            className="contact-form-container card-border"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
             {formStatus.submitted ? (
-              <div className={`form-message ${formStatus.success ? 'success' : 'error'}`}>
-                <div className="message-header">
+              <motion.div
+                className={`form-message ${formStatus.success ? 'success' : 'error'}`}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.div
+                  className="message-header"
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                >
                   {formStatus.success ? (
-                    <i className="fas fa-check-circle message-icon success-icon" />
+                    <motion.i
+                      className="fas fa-check-circle message-icon success-icon"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1, rotate: [0, 10, 0] }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
+                    />
                   ) : (
-                    <i className="fas fa-exclamation-circle message-icon error-icon" />
+                    <motion.i
+                      className="fas fa-exclamation-circle message-icon error-icon"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1, rotate: [0, -10, 0, 10, 0] }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
+                    />
                   )}
-                </div>
-                <div className="message-content">
+                </motion.div>
+                <motion.div
+                  className="message-content"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                >
                   {formStatus.message}
                   {!formStatus.success && (
-                    <div className="error-help">
+                    <motion.div
+                      className="error-help"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      transition={{ delay: 0.6, duration: 0.5 }}
+                    >
                       <p>All EmailJS credentials have been configured successfully! ✅</p>
                       <p>If you're still seeing this error, please check:</p>
                       <ol>
@@ -217,14 +354,19 @@ const Contact = () => {
                         <li>That your template variables match the ones in the code</li>
                       </ol>
                       <p>You can also check the browser console for more detailed error messages.</p>
-                    </div>
+                    </motion.div>
                   )}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             ) : (
-              <form ref={form} className="contact-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <input
+              <motion.form
+                ref={form}
+                className="contact-form"
+                onSubmit={handleSubmit}
+                variants={containerVariants}
+              >
+                <motion.div className="form-group" variants={itemVariants}>
+                  <motion.input
                     type="text"
                     name="name"
                     id="name"
@@ -232,11 +374,14 @@ const Contact = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    initial="initial"
+                    whileFocus="focus"
+                    variants={formControlVariants}
                   />
-                </div>
+                </motion.div>
 
-                <div className="form-group">
-                  <input
+                <motion.div className="form-group" variants={itemVariants}>
+                  <motion.input
                     type="email"
                     name="email"
                     id="email"
@@ -244,11 +389,14 @@ const Contact = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
+                    initial="initial"
+                    whileFocus="focus"
+                    variants={formControlVariants}
                   />
-                </div>
+                </motion.div>
 
-                <div className="form-group">
-                  <input
+                <motion.div className="form-group" variants={itemVariants}>
+                  <motion.input
                     type="text"
                     name="subject"
                     id="subject"
@@ -256,30 +404,41 @@ const Contact = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     required
+                    initial="initial"
+                    whileFocus="focus"
+                    variants={formControlVariants}
                   />
-                </div>
+                </motion.div>
 
-                <div className="form-group">
-                  <textarea
+                <motion.div className="form-group" variants={itemVariants}>
+                  <motion.textarea
                     name="message"
                     id="message"
                     placeholder="Your Message"
                     value={formData.message}
                     onChange={handleChange}
                     required
+                    initial="initial"
+                    whileFocus="focus"
+                    variants={formControlVariants}
                   />
-                </div>
+                </motion.div>
 
-                <button
+                <motion.button
                   type="submit"
                   className="submit-btn"
                   disabled={formStatus.loading}
+                  variants={itemVariants}
+                  initial="initial"
+                  whileHover={!formStatus.loading ? "hover" : "disabled"}
+                  whileTap={!formStatus.loading ? "tap" : "disabled"}
+                  animate={formStatus.loading ? "disabled" : "visible"}
                 >
                   {formStatus.loading ? 'Sending...' : 'Send Message'}
-                </button>
-              </form>
+                </motion.button>
+              </motion.form>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

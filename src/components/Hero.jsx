@@ -49,10 +49,10 @@ const TypeWriter = ({ texts, speed = 100, delay = 1000 }) => {
 const Hero = () => {
   // Skills to display in the typewriter effect
   const skills = [
-    "Web Developer",
-    "UI/UX Designer",
-    "Full Stack Developer",
-    "AI/ML Enthusiast"
+    " Web Developer",
+    " UI/UX Designer",
+    " Full Stack Developer",
+    " AI/ML Enthusiast"
   ];
 
   // Animation variants for staggered animations

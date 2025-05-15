@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { motion } from 'framer-motion';
+import { ThemeContext } from '../context/ThemeContext';
+import SkillsRadarChart from './SkillsRadarChart';
 
 const Skills = () => {
+  // Get theme from context
+  const { theme } = useContext(ThemeContext);
   // State to track which skill is being hovered
   const [activeSkill, setActiveSkill] = useState(null);
 
@@ -278,6 +282,21 @@ const Skills = () => {
               </div>
             </motion.div>
           ))}
+
+          {/* Interactive Skills Radar Chart */}
+          <motion.div
+            className="skills-radar-section"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <div className="section-subheader">
+              <h3>Interactive Skills Visualization</h3>
+              <p>Explore my skills across different domains in this interactive chart. Hover over data points for details.</p>
+            </div>
+            <SkillsRadarChart theme={theme} />
+          </motion.div>
         </motion.div>
       </div>
     </section>

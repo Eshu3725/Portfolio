@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -7,10 +7,13 @@ import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import { ThemeProvider } from './context/ThemeContext';
+import CustomCursor from './components/CustomCursor';
+import ParticlesBackground from './components/ParticlesBackground';
+import { ThemeProvider, ThemeContext } from './context/ThemeContext';
 import './App.css';
 
-function App() {
+const AppContent = () => {
+  const { theme } = useContext(ThemeContext);
   const [isLoading, setIsLoading] = useState(true);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -65,7 +68,7 @@ function App() {
   };
 
   return (
-    <ThemeProvider>
+    <>
       {isLoading ? (
         <motion.div
           className="loading-screen"
@@ -86,6 +89,8 @@ function App() {
           initial="hidden"
           animate="visible"
         >
+          <CustomCursor />
+          <ParticlesBackground theme={theme} />
           <motion.div className="progress-bar" style={{ scaleX }} />
           <Header />
           <main>
@@ -112,6 +117,14 @@ function App() {
           </button>
         </motion.div>
       )}
+    </>
+  );
+};
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
     </ThemeProvider>
   );
 }
