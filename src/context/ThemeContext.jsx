@@ -1,36 +1,32 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
-// Create the theme context
-export const ThemeContext = createContext();
+export const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} });
 
-// Theme provider component
+const readStoredTheme = () => {
+  try {
+    return localStorage.getItem('theme');
+  } catch {
+    return null;
+  }
+};
+
 export const ThemeProvider = ({ children }) => {
-  // Check if user has a theme preference in localStorage
-  const getInitialTheme = () => {
-    const savedTheme = localStorage.getItem('theme');
-    return savedTheme ? savedTheme : 'dark'; // Default to dark theme
-  };
+  const [theme, setTheme] = useState(
+    () => readStoredTheme() || document.documentElement.dataset.theme || 'dark'
+  );
 
-  // State to track current theme
-  const [theme, setTheme] = useState(getInitialTheme);
-
-  // Toggle theme function
-  const toggleTheme = () => {
-    setTheme(prevTheme => {
-      const newTheme = prevTheme === 'dark' ? 'light' : 'dark';
-      return newTheme;
-    });
-  };
-
-  // Update localStorage and document body when theme changes
   useEffect(() => {
-    localStorage.setItem('theme', theme);
-    document.body.setAttribute('data-theme', theme);
+    document.documentElement.dataset.theme = theme;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#070b18' : '#f5efe3');
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      /* storage unavailable — theme still applies for this visit */
+    }
   }, [theme]);
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 };

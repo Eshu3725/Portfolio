@@ -1,0 +1,378 @@
+.contact-layout {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+/* ---------- info column ---------- */
+.contact-info {
+  display: grid;
+  gap: 1rem;
+}
+
+.info-ticket {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.3s, transform 0.3s var(--ease);
+}
+
+.info-ticket:hover {
+  border-color: var(--line-strong);
+  transform: translateX(4px);
+}
+
+.info-icon {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.info-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.info-value {
+  display: block;
+  font-weight: 600;
+}
+
+.info-value small {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 0.3rem;
+}
+
+.info-email {
+  overflow-wrap: anywhere;
+  transition: color 0.3s;
+}
+
+.info-email:hover {
+  color: var(--accent);
+}
+
+.info-sub {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.copy-btn {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  transition: color 0.3s, border-color 0.3s, background 0.3s;
+}
+
+.copy-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.copy-btn.is-copied {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.social-stamps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.social-stamp {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  border: 1.5px dashed var(--line-strong);
+  font-size: 1.3rem;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.social-stamp:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  border-style: solid;
+  color: var(--accent-ink);
+}
+
+/* ---------- postcard form ---------- */
+.mailbox {
+  position: relative;
+}
+
+.postcard-form {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.2fr auto 1fr;
+  gap: 1.5rem;
+  padding: clamp(1.3rem, 3vw, 2.1rem);
+  border-radius: 16px;
+  color: var(--ink);
+  background:
+    repeating-linear-gradient(45deg, rgba(31, 38, 56, 0.015) 0 2px, transparent 2px 6px),
+    linear-gradient(135deg, var(--paper), var(--paper-2));
+  box-shadow: var(--shadow);
+}
+
+/* air-mail border */
+.postcard-form::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 6px;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    #c8382f 0 12px,
+    transparent 12px 24px,
+    #1f5fa8 24px 36px,
+    transparent 36px 48px
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0.85;
+}
+
+.postcard-form.has-error {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(4px); }
+}
+
+.pf-message {
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-dear {
+  font-family: var(--font-hand);
+  font-size: 1.7rem;
+  line-height: 2rem;
+  color: var(--ink-hand);
+}
+
+.pf-message textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 300px;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  line-height: 2rem;
+  color: var(--ink-hand);
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 calc(2rem - 1px),
+    rgba(31, 38, 56, 0.2) calc(2rem - 1px) 2rem
+  );
+  background-attachment: local;
+}
+
+.pf-divider {
+  width: 1px;
+  background: rgba(31, 38, 56, 0.22);
+}
+
+.pf-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.pf-stamp-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.pf-postmark {
+  padding: 0.35rem 0.6rem;
+  border: 2px solid #1f5fa8;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: #1f5fa8;
+  transform: rotate(-6deg);
+  opacity: 0.8;
+}
+
+.pc-stamp.pf-stamp {
+  position: relative;
+  top: auto;
+  right: auto;
+  flex: none;
+  width: 70px;
+  height: 84px;
+  animation: stampWiggle 4s ease-in-out infinite;
+}
+
+@keyframes stampWiggle {
+  0%, 100% { transform: rotate(4deg); }
+  50% { transform: rotate(-3deg); }
+}
+
+.pf-field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.pf-field input {
+  width: 100%;
+  padding: 0.3rem 0;
+  border: 0;
+  border-bottom: 1.5px solid rgba(31, 38, 56, 0.3);
+  outline: none;
+  background: transparent;
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  color: var(--ink-hand);
+  transition: border-color 0.3s;
+}
+
+.pf-field input:focus,
+.pf-message textarea:focus {
+  border-color: var(--paper-accent);
+}
+
+.pf-message textarea:focus {
+  box-shadow: inset 0 -2px 0 var(--paper-accent);
+}
+
+.postcard-form ::placeholder {
+  color: rgba(35, 48, 99, 0.4);
+}
+
+.pf-error {
+  overflow: hidden;
+  font-size: 0.85rem;
+  color: #b42318;
+}
+
+.pf-submit {
+  margin-top: auto;
+  justify-content: center;
+  background: var(--paper-accent);
+  color: #fff;
+  box-shadow: 0 12px 30px -12px rgba(217, 83, 28, 0.7);
+}
+
+/* ---------- delivered ---------- */
+.delivered {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: clamp(2.5rem, 6vw, 4rem) 2rem;
+  text-align: center;
+  border-radius: 16px;
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--paper), var(--paper-2));
+  box-shadow: var(--shadow);
+}
+
+.delivered-stamp {
+  padding: 0.6rem 1.4rem;
+  border: 4px double #2f7d4f;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #2f7d4f;
+}
+
+.delivered h3 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+}
+
+.delivered p {
+  max-width: 380px;
+  color: var(--ink-muted);
+}
+
+.delivered .btn-ghost {
+  color: var(--ink);
+  background: transparent;
+  border-color: rgba(31, 38, 56, 0.3);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 980px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .postcard-form {
+    grid-template-columns: 1fr;
+  }
+
+  .pf-divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .pf-message textarea {
+    min-height: 220px;
+  }
+}

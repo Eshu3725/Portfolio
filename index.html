@@ -1,16 +1,31 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Eshaan A V | Portfolio</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <meta name="description" content="Professional portfolio showcasing web development projects by Eshaan A V">
+    <title>Eshaan A V · AI &amp; Data Science Engineer in the making</title>
+    <meta name="description" content="Eshaan A V — final-year AI &amp; Data Science Engineering student and Trainee at OtomeytAI. Data engineering, AI/ML and 3D animation. Builder of SECT, FinSecureAnon and Signify.Ed." />
+    <meta name="theme-color" content="#070b18" />
+    <meta property="og:title" content="Eshaan A V · AI & Data Science" />
+    <meta property="og:description" content="Data engineering, AI/ML and 3D animation — a travel-themed portfolio. Boarding now." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Set theme before first paint to avoid a flash -->
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   </head>
   <body>
     <div id="root"></div>

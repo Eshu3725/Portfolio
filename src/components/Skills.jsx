@@ -1,303 +1,166 @@
-import { useState, useContext } from 'react';
-import { motion } from 'framer-motion';
-import { ThemeContext } from '../context/ThemeContext';
-import SkillsRadarChart from './SkillsRadarChart';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import SectionHeader from './ui/SectionHeader';
+import { profile, skillGates } from '../data/content';
+import '../styles/skills.css';
+
+const ALL_SKILLS = skillGates.flatMap((g) => g.skills.map((s) => ({ ...s, gate: g.id })));
+
+const BaggageBelt = ({ items, reverse }) => (
+  <div className={`belt ${reverse ? 'reverse' : ''}`}>
+    {[...items, ...items].map((s, i) => (
+      <span
+        key={`${s.name}-${i}`}
+        className="sticker"
+        style={{ '--brand': s.color, '--r': `${((i * 37) % 9) - 4}deg` }}
+        aria-hidden={i >= items.length}
+      >
+        <i className={s.icon} />
+        {s.name}
+      </span>
+    ))}
+  </div>
+);
+
+const LuggageTag = ({ skill, index, gate }) => (
+  <motion.li
+    className="tag-wrap"
+    style={{ '--brand': skill.color }}
+    initial={{ opacity: 0, y: -30, rotate: -10 }}
+    animate={{ opacity: 1, y: 0, rotate: 0 }}
+    exit={{ opacity: 0, y: 30, transition: { duration: 0.2 } }}
+    transition={{ delay: index * 0.07, type: 'spring', stiffness: 140, damping: 11 }}
+    whileHover={{ rotate: [0, -6, 4, -2, 0], transition: { duration: 0.9 } }}
+  >
+    <span className="tag-string" aria-hidden="true" />
+    <div className="tag">
+      <span className="tag-eyelet" aria-hidden="true" />
+      <div className="tag-top">
+        <i className={`${skill.icon} tag-icon`} aria-hidden="true" />
+        <span className="tag-tier">{skill.note}</span>
+      </div>
+      <h4 className="tag-name">{skill.name}</h4>
+      <div className="tag-foot">
+        <span>
+          <i className="fas fa-check" aria-hidden="true" /> Checked in
+        </span>
+        <span>
+          {gate}-{String(index + 1).padStart(2, '0')}
+        </span>
+      </div>
+    </div>
+  </motion.li>
+);
 
 const Skills = () => {
-  // Get theme from context
-  const { theme } = useContext(ThemeContext);
-  // State to track which skill is being hovered
-  const [activeSkill, setActiveSkill] = useState(null);
-
-  // Categorized skills with proficiency levels and descriptions
-  const skillCategories = {
-    programmingLanguages: [
-      {
-        name: 'Python',
-        level: 80,
-        icon: 'fab fa-python',
-        color: '#3776AB',
-        description: 'Proficient in Python for data analysis, automation, and backend development.'
-      },
-      {
-        name: 'JavaScript',
-        level: 50,
-        icon: 'fab fa-js',
-        color: '#F7DF1E',
-        description: 'Experience with modern JavaScript for web development and interactive applications.'
-      },
-      {
-        name: 'Flutter',
-        level: 10,
-        icon: 'fas fa-mobile-alt',
-        color: '#02569B',
-        description: 'Beginning to explore Flutter for cross-platform mobile app development.'
-      },
-      {
-        name: 'C/C++',
-        level: 70,
-        icon: 'fas fa-code',
-        color: '#00599C',
-        description: 'Strong foundation in C/C++ for system programming and algorithm implementation.'
-      }
-    ],
-    backend: [
-      {
-        name: 'Node.js',
-        level: 10,
-        icon: 'fab fa-node-js',
-        color: '#339933',
-        description: 'Starting to build server-side applications with Node.js.'
-      },
-      {
-        name: 'Express',
-        level: 10,
-        icon: 'fas fa-server',
-        color: '#000000',
-        description: 'Learning to create RESTful APIs using Express framework.'
-      },
-      {
-        name: 'Firebase',
-        level: 50,
-        icon: 'fas fa-fire',
-        color: '#FFCA28',
-        description: 'Experience with Firebase for authentication, database, and hosting.'
-      },
-      {
-        name: 'MongoDB',
-        level: 10,
-        icon: 'fas fa-database',
-        color: '#47A248',
-        description: 'Beginning to work with MongoDB for NoSQL database solutions.'
-      }
-    ],
-    frontend: [
-      {
-        name: 'HTML5',
-        level: 90,
-        icon: 'fab fa-html5',
-        color: '#E34F26',
-        description: 'Expert in HTML5 for structuring web content and applications.'
-      },
-      {
-        name: 'CSS3',
-        level: 70,
-        icon: 'fab fa-css3-alt',
-        color: '#1572B6',
-        description: 'Strong skills in CSS3 for styling and responsive design.'
-      },
-      {
-        name: 'React',
-        level: 30,
-        icon: 'fab fa-react',
-        color: '#61DAFB',
-        description: 'Building interactive UIs with React and its ecosystem.'
-      },
-      {
-        name: 'UI/UX Design',
-        level: 50,
-        icon: 'fas fa-paint-brush',
-        color: '#FF7F50',
-        description: 'Creating user-centered designs with focus on usability and aesthetics.'
-      },
-      {
-        name: 'Tailwind CSS',
-        level: 10,
-        icon: 'fab fa-css3',
-        color: '#38B2AC',
-        description: 'Starting to use Tailwind CSS for utility-first styling approach.'
-      }
-    ],
-    tools: [
-      {
-        name: 'Git',
-        level: 80,
-        icon: 'fab fa-git-alt',
-        color: '#F05032',
-        description: 'Proficient with Git for version control and collaboration.'
-      },
-      {
-        name: 'Android Studio',
-        level: 90,
-        icon: 'fab fa-android',
-        color: '#3DDC84',
-        description: 'Expert in using Android Studio for mobile app development.'
-      },
-      {
-        name: 'AI/ML',
-        level: 20,
-        icon: 'fas fa-brain',
-        color: '#9C27B0',
-        description: 'Exploring artificial intelligence and machine learning concepts.'
-      },
-      {
-        name: 'TensorFlow',
-        level: 10,
-        icon: 'fas fa-cogs',
-        color: '#FF6F00',
-        description: 'Beginning to implement machine learning models with TensorFlow.'
-      },
-      {
-        name: 'Scikit-learn',
-        level: 10,
-        icon: 'fas fa-chart-line',
-        color: '#F7931E',
-        description: 'Learning to use Scikit-learn for data analysis and modeling.'
-      }
-    ]
-  };
-
-  // Category titles with icons and descriptions
-  const categoryTitles = {
-    programmingLanguages: {
-      title: 'Programming Languages',
-      icon: 'fa-code',
-      description: 'Core programming languages I use to build software solutions.'
-    },
-    frontend: {
-      title: 'Frontend Development',
-      icon: 'fa-laptop-code',
-      description: 'Technologies I use to create responsive and interactive user interfaces.'
-    },
-    backend: {
-      title: 'Backend Development',
-      icon: 'fa-server',
-      description: 'Tools and frameworks I use for server-side application development.'
-    },
-    tools: {
-      title: 'Tools & Technologies',
-      icon: 'fa-tools',
-      description: 'Additional technologies and tools I use in my development workflow.'
-    }
-  };
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
-  };
-
-  const categoryVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" }
-    }
-  };
-
-  const skillCardVariants = {
-    hidden: { scale: 0.9, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: { duration: 0.4 }
-    },
-    hover: {
-      scale: 1.05,
-      boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.15)",
-      transition: { duration: 0.3 }
-    }
-  };
+  const [gateId, setGateId] = useState(skillGates[0].id);
+  const gate = skillGates.find((g) => g.id === gateId);
+  const half = Math.ceil(ALL_SKILLS.length / 2);
 
   return (
-    <section id="skills" className="skills">
-      <div className="container skills-container">
-        <motion.div
-          className="section-header"
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2>Skills & Technologies</h2>
-          <div className="section-divider">
-            <span className="section-line" />
-          </div>
-        </motion.div>
+    <section id="skills" className="section skills">
+      <div className="container">
+        <SectionHeader
+          code="03"
+          kicker="Skills"
+          title="The"
+          accent="Travel Kit"
+          subtitle="Everything I pack for the journey — from Python and PySpark to Kafka, Azure and Blender, sorted by gate."
+        />
+      </div>
 
-        <motion.div
-          className="skills-content"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-        >
-          {/* Render each skill category */}
-          {Object.keys(skillCategories).map((category) => (
-            <motion.div
-              className="skill-category"
-              key={category}
-              variants={categoryVariants}
-            >
-              <div className="category-header">
-                <i className={`fas ${categoryTitles[category].icon} category-icon`} />
-                <div className="category-title-container">
-                  <h3>{categoryTitles[category].title}</h3>
-                  <p className="category-description">{categoryTitles[category].description}</p>
-                </div>
-              </div>
+      <div className="carousel" aria-hidden="true">
+        <BaggageBelt items={ALL_SKILLS.slice(0, half)} />
+        <BaggageBelt items={ALL_SKILLS.slice(half)} reverse />
+      </div>
 
-              {/* Modern skill cards for this category */}
-              <div className="skill-cards">
-                {skillCategories[category].map((skill) => (
-                  <motion.div
-                    className={`skill-card ${activeSkill === `${category}-${skill.name}` ? 'active' : ''}`}
-                    key={`${category}-${skill.name}`}
-                    variants={skillCardVariants}
-                    whileHover="hover"
-                    onMouseEnter={() => setActiveSkill(`${category}-${skill.name}`)}
-                    onMouseLeave={() => setActiveSkill(null)}
-                  >
-                    <div className="skill-card-header" style={{ backgroundColor: `${skill.color}20` }}>
-                      <i className={`${skill.icon} skill-icon`} style={{ color: skill.color }} />
-                      <h4 className="skill-name">{skill.name}</h4>
-                    </div>
+      <div className="container">
+        <div className="gates" role="tablist" aria-label="Skill categories">
+          {skillGates.map((g) => {
+            const active = g.id === gateId;
+            return (
+              <button
+                key={g.id}
+                type="button"
+                role="tab"
+                id={`gate-tab-${g.id}`}
+                aria-selected={active}
+                aria-controls="gate-panel"
+                className={`gate ${active ? 'is-active' : ''}`}
+                onClick={() => setGateId(g.id)}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="gate-pill"
+                    className="gate-pill"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <span className="gate-code">Gate {g.id}</span>
+                <span className="gate-name">
+                  <i className={g.icon} /> {g.short}
+                </span>
+                <span className="gate-count">{g.skills.length} items</span>
+              </button>
+            );
+          })}
+        </div>
 
-                    <div className="skill-card-body">
-                      <div className="skill-level-container">
-                        <div className="skill-level-bar">
-                          <motion.div
-                            className="skill-level-fill"
-                            style={{ backgroundColor: skill.color }}
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${skill.level}%` }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-                          />
-                        </div>
-                        <span className="skill-percentage">{skill.level}%</span>
-                      </div>
-
-                      <p className="skill-description">{skill.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-
-          {/* Interactive Skills Radar Chart */}
-          <motion.div
-            className="skills-radar-section"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+        <div className="kit-layout">
+          <div
+            id="gate-panel"
+            className="tags-panel"
+            role="tabpanel"
+            aria-labelledby={`gate-tab-${gateId}`}
           >
-            <div className="section-subheader">
-              <h3>Interactive Skills Visualization</h3>
-              <p>Explore my skills across different domains in this interactive chart. Hover over data points for details.</p>
+            <AnimatePresence mode="wait">
+              <motion.ul key={gateId} className="tags-grid">
+                {gate.skills.map((s, i) => (
+                  <LuggageTag key={s.name} skill={s} index={i} gate={gateId} />
+                ))}
+              </motion.ul>
+            </AnimatePresence>
+          </div>
+
+          <motion.aside
+            className="manifest"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="manifest-head">
+              <span>Baggage manifest</span>
+              <i className="fas fa-suitcase-rolling" />
             </div>
-            <SkillsRadarChart theme={theme} />
-          </motion.div>
-        </motion.div>
+            <dl>
+              <div className="manifest-row">
+                <dt>Items packed</dt>
+                <dd>{ALL_SKILLS.length}</dd>
+              </div>
+              <div className="manifest-row">
+                <dt>Compartments</dt>
+                <dd>{skillGates.length}</dd>
+              </div>
+              <div className="manifest-row">
+                <dt>Now boarding</dt>
+                <dd>{gate.title}</dd>
+              </div>
+            </dl>
+
+            <div className="phrasebook">
+              <span className="phrasebook-title">
+                <i className="fas fa-language" /> Phrasebook
+              </span>
+              <ul>
+                {profile.languages.map((lang) => (
+                  <li key={lang}>{lang}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="barcode" aria-hidden="true" />
+          </motion.aside>
+        </div>
       </div>
     </section>
   );

@@ -1,444 +1,319 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
+import SectionHeader from './ui/SectionHeader';
+import { profile, socials } from '../data/content';
+import '../styles/contact.css';
+
+const EMAILJS = {
+  serviceId: 'service_vju42lr',
+  templateId: 'template_e2gh0t1',
+  publicKey: 'hVslgb1CuXw-t13_w',
+};
+
+const EMPTY = { name: '', email: '', subject: '', message: '' };
+
+const useLocalTime = (timeZone) => {
+  const fmt = useMemo(
+    () => new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone }),
+    [timeZone]
+  );
+  const [time, setTime] = useState(() => fmt.format(new Date()));
+  useEffect(() => {
+    const id = setInterval(() => setTime(fmt.format(new Date())), 15000);
+    return () => clearInterval(id);
+  }, [fmt]);
+  return time;
+};
 
 const Contact = () => {
-  const form = useRef();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+  const [form, setForm] = useState(EMPTY);
+  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const localTime = useLocalTime(profile.timezone);
 
-  const [formStatus, setFormStatus] = useState({
-    submitted: false,
-    success: false,
-    message: '',
-    loading: false
-  });
+  const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  // Initialize EmailJS once when component mounts
-  useEffect(() => {
-    // Initialize EmailJS with your public key
-    emailjs.init("hVslgb1CuXw-t13_w");
-
-    // Log a success message
-    console.log("✅ EmailJS has been successfully initialized with your public key.");
-    console.log("✅ Service ID and Template ID are also configured.");
-    console.log("✅ Your contact form should now be fully functional!");
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-
-    // Set loading state
-    setFormStatus({
-      ...formStatus,
-      loading: true
-    });
-
-    // EmailJS service configuration
-    // Using your provided EmailJS service ID
-    const serviceId = 'service_vju42lr';
-
-    // Using your provided EmailJS template ID
-    const templateId = 'template_e2gh0t1';
-
-    // Prepare template parameters
-    const templateParams = {
-      from_name: formData.name,
-      from_email: formData.email,
-      reply_to: formData.email, // Add reply_to parameter to ensure the sender's email is included
-      subject: formData.subject,
-      message: `Subject: ${formData.subject}\n\nMessage from ${formData.name} (${formData.email}):\n\n${formData.message}`,
-      to_name: 'Eshaan',
-      to_email: 'eshaanvenkatesh3725@gmail.com'
-    };
-
+    setStatus('sending');
+    setError('');
     try {
-      // Send email using EmailJS with explicit subject
-      emailjs.send(
-        serviceId,
-        templateId,
+      await emailjs.send(
+        EMAILJS.serviceId,
+        EMAILJS.templateId,
         {
-          ...templateParams,
-          // Ensure subject is properly set for the email
-          subject_line: formData.subject
-        }
-      )
-        .then((response) => {
-          console.log('Email sent successfully:', response);
-
-          // Update form status on success
-          setFormStatus({
-            submitted: true,
-            success: true,
-            message: 'Thank you for your message! I will get back to you soon.',
-            loading: false
-          });
-
-          // Reset form after submission
-          setFormData({
-            name: '',
-            email: '',
-            subject: '',
-            message: ''
-          });
-
-          // Reset form status after 5 seconds
-          setTimeout(() => {
-            setFormStatus({
-              submitted: false,
-              success: false,
-              message: '',
-              loading: false
-            });
-          }, 5000);
-        })
-        .catch((error) => {
-          console.error('Email sending failed:', error);
-
-          // Update form status on error
-          setFormStatus({
-            submitted: true,
-            success: false,
-            message: `EmailJS Error: ${error.text || 'Failed to send email. Please check your EmailJS configuration.'}`,
-            loading: false
-          });
-
-          // Reset error message after 8 seconds
-          setTimeout(() => {
-            setFormStatus({
-              submitted: false,
-              success: false,
-              message: '',
-              loading: false
-            });
-          }, 8000);
-        });
-    } catch (error) {
-      console.error('Error in email sending process:', error);
-
-      // Update form status on error
-      setFormStatus({
-        submitted: true,
-        success: false,
-        message: `Error: ${error.message || 'Something went wrong. Please make sure EmailJS is properly configured.'}`,
-        loading: false
-      });
-
-      // Reset error message after 8 seconds
-      setTimeout(() => {
-        setFormStatus({
-          submitted: false,
-          success: false,
-          message: '',
-          loading: false
-        });
-      }, 8000);
+          from_name: form.name,
+          from_email: form.email,
+          reply_to: form.email,
+          subject: form.subject,
+          subject_line: form.subject,
+          message: `Subject: ${form.subject}\n\nMessage from ${form.name} (${form.email}):\n\n${form.message}`,
+          to_name: profile.firstName,
+          to_email: profile.email,
+        },
+        { publicKey: EMAILJS.publicKey }
+      );
+      setStatus('sent');
+      setForm(EMPTY);
+    } catch (err) {
+      console.error('Email sending failed:', err);
+      setError(err?.text || 'The postcard got lost in transit. Please try again, or email me directly.');
+      setStatus('error');
     }
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.location.href = `mailto:${profile.email}`;
     }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" }
-    }
-  };
-
-  const formControlVariants = {
-    initial: { scale: 1, boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)" },
-    focus: { scale: 1.02, boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)" }
-  };
-
-  const buttonVariants = {
-    initial: { scale: 1 },
-    hover: {
-      scale: 1.05,
-      boxShadow: "0 10px 25px rgba(var(--primary-rgb), 0.3)"
-    },
-    tap: { scale: 0.98 },
-    disabled: {
-      opacity: 0.7,
-      scale: 1,
-      boxShadow: "none"
-    }
-  };
-
-  const socialLinkVariants = {
-    initial: { scale: 1 },
-    hover: {
-      y: -5,
-      scale: 1.2,
-      backgroundColor: "var(--primary)",
-      color: "white",
-      transition: { duration: 0.3 }
-    },
-    tap: { scale: 0.9 }
   };
 
   return (
-    <section id="contact" className="contact">
-      <div className="container contact-container">
-        <motion.div
-          className="section-header"
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2>Get In Touch</h2>
-          <div className="section-divider">
-            <span className="section-line" />
-          </div>
-        </motion.div>
+    <section id="contact" className="section contact">
+      <div className="container">
+        <SectionHeader
+          code="05"
+          kicker="Contact"
+          title="Send a"
+          accent="Postcard"
+          subtitle="Have an idea, an opportunity or a travel tip? Write it down, drop it in the mailbox — I read every one."
+        />
 
-        <div className="contact-content">
+        <div className="contact-layout">
           <motion.div
             className="contact-info"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
           >
-            <motion.div className="contact-item" variants={itemVariants}>
-              <div className="contact-icon">
-                <i className="fas fa-map-marker-alt" />
+            <div className="info-ticket">
+              <span className="info-icon">
+                <i className="fas fa-location-dot" />
+              </span>
+              <div>
+                <span className="info-label">Home base</span>
+                <span className="info-value">{profile.location}</span>
+                <span className="info-sub">{profile.coords}</span>
               </div>
-              <div className="contact-text">
-                <h3>Location</h3>
-                <p>Tumkur, Karnataka, India</p>
-              </div>
-            </motion.div>
+            </div>
 
-            <motion.div className="contact-item" variants={itemVariants}>
-              <div className="contact-icon">
+            <div className="info-ticket">
+              <span className="info-icon">
+                <i className="fas fa-clock" />
+              </span>
+              <div>
+                <span className="info-label">Local time</span>
+                <span className="info-value">
+                  {localTime} <small>IST · UTC+5:30</small>
+                </span>
+              </div>
+            </div>
+
+            <div className="info-ticket">
+              <span className="info-icon">
                 <i className="fas fa-envelope" />
+              </span>
+              <div className="info-grow">
+                <span className="info-label">Email</span>
+                <a className="info-value info-email" href={`mailto:${profile.email}`}>
+                  {profile.email}
+                </a>
               </div>
-              <div className="contact-text">
-                <h3>Email</h3>
-                <p>eshaanvenkatesh3725@gmail.com</p>
-              </div>
-            </motion.div>
+              <button
+                type="button"
+                className={`copy-btn ${copied ? 'is-copied' : ''}`}
+                onClick={copyEmail}
+                aria-label="Copy email address"
+                data-cursor={copied ? 'Copied' : 'Copy'}
+              >
+                <i className={copied ? 'fas fa-check' : 'far fa-copy'} />
+              </button>
+            </div>
+            <span className="sr-only" aria-live="polite">
+              {copied ? 'Email address copied to clipboard' : ''}
+            </span>
 
-            <motion.div className="social-links" variants={itemVariants}>
-              <motion.a
-                href="https://github.com/Eshu3725"
-                className="social-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                variants={socialLinkVariants}
-              >
-                <i className="fab fa-github" />
-              </motion.a>
-              <motion.a
-                href="https://www.linkedin.com/in/eshaan-a-v-62068028a/"
-                className="social-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                variants={socialLinkVariants}
-              >
-                <i className="fab fa-linkedin-in" />
-              </motion.a>
-              <motion.a
-                href="https://x.com/Eshaan9320"
-                className="social-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                variants={socialLinkVariants}
-              >
-                <i className="fab fa-twitter" />
-              </motion.a>
-              <motion.a
-                href="https://dribbble.com/Eshu3725"
-                className="social-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                variants={socialLinkVariants}
-              >
-                <i className="fab fa-dribbble" />
-              </motion.a>
-            </motion.div>
+            <div className="social-stamps">
+              {socials.map((s, i) => (
+                <motion.a
+                  key={s.name}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-stamp"
+                  aria-label={s.name}
+                  data-cursor={s.name}
+                  initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
+                  whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                  whileHover={{ rotate: -8, y: -4 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 + i * 0.1, type: 'spring', stiffness: 220, damping: 14 }}
+                >
+                  <i className={s.icon} />
+                </motion.a>
+              ))}
+            </div>
           </motion.div>
 
-          <motion.div
-            className="contact-form-container card-border"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            {formStatus.submitted ? (
-              <motion.div
-                className={`form-message ${formStatus.success ? 'success' : 'error'}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <motion.div
-                  className="message-header"
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
+          <div className="mailbox">
+            <AnimatePresence mode="wait">
+              {status !== 'sent' ? (
+                <motion.form
+                  key="postcard"
+                  className={`postcard-form ${status === 'error' ? 'has-error' : ''}`}
+                  onSubmit={onSubmit}
+                  initial={{ opacity: 0, y: 50, rotate: 2 }}
+                  whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+                  viewport={{ once: true, amount: 0.25 }}
+                  exit={{
+                    x: 420,
+                    y: -260,
+                    rotate: 24,
+                    scale: 0.4,
+                    opacity: 0,
+                    transition: { duration: 0.8, ease: [0.5, 0, 0.75, 0] },
+                  }}
+                  transition={{ duration: 0.8 }}
                 >
-                  {formStatus.success ? (
-                    <motion.i
-                      className="fas fa-check-circle message-icon success-icon"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1, rotate: [0, 10, 0] }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
+                  <div className="pf-message">
+                    <label htmlFor="pf-message" className="pf-dear">
+                      Dear {profile.firstName},
+                    </label>
+                    <textarea
+                      id="pf-message"
+                      name="message"
+                      value={form.message}
+                      onChange={onChange}
+                      placeholder="Write your message here…"
+                      required
+                      maxLength={2000}
+                      rows={7}
                     />
-                  ) : (
-                    <motion.i
-                      className="fas fa-exclamation-circle message-icon error-icon"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1, rotate: [0, -10, 0, 10, 0] }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                    />
-                  )}
-                </motion.div>
-                <motion.div
-                  className="message-content"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                >
-                  {formStatus.message}
-                  {!formStatus.success && (
-                    <motion.div
-                      className="error-help"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      transition={{ delay: 0.6, duration: 0.5 }}
+                  </div>
+
+                  <div className="pf-divider" aria-hidden="true" />
+
+                  <div className="pf-right">
+                    <div className="pf-stamp-row" aria-hidden="true">
+                      <span className="pf-postmark">
+                        Air mail
+                        <br />
+                        Par avion
+                      </span>
+                      <span className="pc-stamp pf-stamp">
+                        <span className="pc-stamp-inner">
+                          <i className="fas fa-paper-plane" />
+                          <span>EAV</span>
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className="pf-field">
+                      <label htmlFor="pf-name">From</label>
+                      <input
+                        id="pf-name"
+                        name="name"
+                        value={form.name}
+                        onChange={onChange}
+                        placeholder="Your name"
+                        autoComplete="name"
+                        required
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="pf-field">
+                      <label htmlFor="pf-email">Return address</label>
+                      <input
+                        id="pf-email"
+                        type="email"
+                        name="email"
+                        value={form.email}
+                        onChange={onChange}
+                        placeholder="you@email.com"
+                        autoComplete="email"
+                        required
+                        maxLength={150}
+                      />
+                    </div>
+                    <div className="pf-field">
+                      <label htmlFor="pf-subject">Subject</label>
+                      <input
+                        id="pf-subject"
+                        name="subject"
+                        value={form.subject}
+                        onChange={onChange}
+                        placeholder="What's it about?"
+                        required
+                        maxLength={150}
+                      />
+                    </div>
+
+                    <AnimatePresence>
+                      {status === 'error' && (
+                        <motion.p
+                          className="pf-error"
+                          role="alert"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                        >
+                          <i className="fas fa-triangle-exclamation" /> Returned to sender: {error}
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+
+                    <button
+                      type="submit"
+                      className="btn btn-primary pf-submit"
+                      disabled={status === 'sending'}
+                      data-cursor="Send"
                     >
-                      <p>All EmailJS credentials have been configured successfully! ✅</p>
-                      <p>If you're still seeing this error, please check:</p>
-                      <ol>
-                        <li>Your internet connection</li>
-                        <li>That your EmailJS account is active</li>
-                        <li>That your template variables match the ones in the code</li>
-                      </ol>
-                      <p>You can also check the browser console for more detailed error messages.</p>
-                    </motion.div>
-                  )}
-                </motion.div>
-              </motion.div>
-            ) : (
-              <motion.form
-                ref={form}
-                className="contact-form"
-                onSubmit={handleSubmit}
-                variants={containerVariants}
-              >
-                <motion.div className="form-group" variants={itemVariants}>
-                  <motion.input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="Your Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    initial="initial"
-                    whileFocus="focus"
-                    variants={formControlVariants}
-                  />
-                </motion.div>
-
-                <motion.div className="form-group" variants={itemVariants}>
-                  <motion.input
-                    type="email"
-                    name="email"
-                    id="email"
-                    placeholder="Your Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    initial="initial"
-                    whileFocus="focus"
-                    variants={formControlVariants}
-                  />
-                </motion.div>
-
-                <motion.div className="form-group" variants={itemVariants}>
-                  <motion.input
-                    type="text"
-                    name="subject"
-                    id="subject"
-                    placeholder="Subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    initial="initial"
-                    whileFocus="focus"
-                    variants={formControlVariants}
-                  />
-                </motion.div>
-
-                <motion.div className="form-group" variants={itemVariants}>
-                  <motion.textarea
-                    name="message"
-                    id="message"
-                    placeholder="Your Message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    initial="initial"
-                    whileFocus="focus"
-                    variants={formControlVariants}
-                  />
-                </motion.div>
-
-                <motion.button
-                  type="submit"
-                  className="submit-btn"
-                  disabled={formStatus.loading}
-                  variants={itemVariants}
-                  initial="initial"
-                  whileHover={!formStatus.loading ? "hover" : "disabled"}
-                  whileTap={!formStatus.loading ? "tap" : "disabled"}
-                  animate={formStatus.loading ? "disabled" : "visible"}
+                      {status === 'sending' ? (
+                        <>
+                          Sending <i className="fas fa-plane fa-beat-fade" />
+                        </>
+                      ) : (
+                        <>
+                          Send postcard <i className="fas fa-paper-plane" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </motion.form>
+              ) : (
+                <motion.div
+                  key="delivered"
+                  className="delivered"
+                  role="status"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 40 }}
+                  transition={{ duration: 0.6 }}
                 >
-                  {formStatus.loading ? 'Sending...' : 'Send Message'}
-                </motion.button>
-              </motion.form>
-            )}
-          </motion.div>
+                  <motion.span
+                    className="delivered-stamp"
+                    initial={{ scale: 3, rotate: -40, opacity: 0 }}
+                    animate={{ scale: 1, rotate: -12, opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.45, ease: [0.3, 1.4, 0.5, 1] }}
+                  >
+                    Delivered
+                  </motion.span>
+                  <h3>Your postcard is on its way!</h3>
+                  <p>Thanks for writing — I&apos;ll get back to you soon. Safe travels until then.</p>
+                  <button type="button" className="btn btn-ghost" onClick={() => setStatus('idle')}>
+                    Write another <i className="fas fa-pen-nib" />
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </section>
